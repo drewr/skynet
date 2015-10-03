@@ -1,0 +1,9 @@
+[submodule "puppet/modules/stdlib"]
+	path = puppet/modules/stdlib
+	url = https://github.com/puppetlabs/puppetlabs-stdlib
+[submodule "puppet/modules/systemd"]
+	path = puppet/modules/systemd
+	url = https://github.com/camptocamp/puppet-systemd
+[submodule "puppet/modules/znc"]
+	path = puppet/modules/znc
+	url = https://github.com/jfryman/puppet-znc
