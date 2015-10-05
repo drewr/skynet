@@ -27,6 +27,7 @@ main = do
           , "git"
           , "rsync"
           ]
+  file "http://s3.draines.com.s3.amazonaws.com/dist/git-crypt" "/usr/local/bin/git-crypt" executable
   cloneRepo repo
   syncEtc (repoPath repo)
   puppetApply
@@ -36,6 +37,14 @@ updateApt = cmd "apt-get" [ "update" ]
 
 package :: [PackageName] -> IO ()
 package names = cmd "apt-get" ([ "install", "-f", "-y" ] ++ names)
+
+file :: Text -> Text -> (Permissions -> Permissions) -> IO ()
+file src dest mode = do
+  mktree (dirname $ fromText dest)
+  let c = format ("curl -s " % s % " >" % s) src dest
+  cmdSingle c
+  perm <- chmod mode (fromText dest)
+  print $ repr perm
 
 syncEtc :: Turtle.FilePath -> IO ()
 syncEtc dir = do
@@ -78,3 +87,10 @@ cmd name args = do
   case ret of
     ExitSuccess -> return ()
     ExitFailure n -> die (name <> " failed with exit code: " <> repr n)
+
+cmdSingle :: Text -> IO ()
+cmdSingle c = do
+  ret <- shell c empty
+  case ret of
+    ExitSuccess -> return ()
+    ExitFailure n -> die (c <> " failed with exit code: " <> repr n)
