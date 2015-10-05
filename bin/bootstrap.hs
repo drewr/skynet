@@ -29,6 +29,7 @@ main = do
           ]
   cloneRepo repo
   syncEtc (repoPath repo)
+  puppetApply
 
 updateApt :: IO ()
 updateApt = cmd "apt-get" [ "update" ]
@@ -66,6 +67,10 @@ gitUpdateSubmodules dir = do
   cd dir
   cmd "git" [ "submodule", "sync" ]
   cmd "git" [ "submodule", "update", "--init" ]
+
+puppetApply :: IO ()
+puppetApply = do
+  cmd "puppet" [ "apply", "/etc/puppet/manifests/" ]
 
 cmd :: Text -> [Text] -> IO ()
 cmd name args = do
