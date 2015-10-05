@@ -5,12 +5,11 @@
 
 import Data.Text (pack)
 import Data.List
-import System.FilePath (dropFileName)
 import Turtle
 
 type PackageName = Text
-data Repository = Repository { repoPath :: String
-                             , repoUrl :: String
+data Repository = Repository { repoPath :: Text
+                             , repoUrl :: Text
                              }
 
 main :: IO ()
@@ -34,8 +33,8 @@ package names = cmd "apt-get" ([ "install", "-f", "-y" ] ++ names)
 
 cloneRepo :: Repository -> IO ()
 cloneRepo repo = do
-  mkdir (dropFileName $ repoPath repo)
-  cmd "git" [ "clone", (pack $ repoUrl repo), (pack $ repoPath repo) ]
+  mkdir (dirname $ fromText $ repoPath repo)
+  cmd "git" [ "clone", (repoUrl repo), (repoPath repo) ]
 
 cmd :: Text -> [Text] -> IO ()
 cmd name args = do
