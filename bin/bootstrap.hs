@@ -3,19 +3,22 @@
 
 {-# LANGUAGE OverloadedStrings #-}
 
-import Data.Text (pack)
 import Data.List
+import Data.Text (pack, unpack)
+import System.Directory (doesDirectoryExist)
 import Turtle
 
 type PackageName = Text
 data Repository = Repository { repoPath :: Text
                              , repoUrl :: Text
+                             , repoCommit :: Text
                              }
 
 main :: IO ()
 main = do
   let repo = Repository { repoPath = "/root/src/skynet"
                         , repoUrl = "https://github.com/drewr/skynet"
+                        , repoCommit = "origin/master"
                         }
   updateApt
   package [ "facter"
@@ -33,8 +36,20 @@ package names = cmd "apt-get" ([ "install", "-f", "-y" ] ++ names)
 
 cloneRepo :: Repository -> IO ()
 cloneRepo repo = do
-  mkdir (dirname $ fromText $ repoPath repo)
-  cmd "git" [ "clone", (repoUrl repo), (repoPath repo) ]
+  exist <- doesDirectoryExist (unpack $ repoPath repo)
+  if exist
+    then gitCheckoutForce (repoPath repo) (repoCommit repo)
+    else gitClone (repoUrl repo) (repoPath repo)
+
+gitCheckoutForce :: Text -> Text -> IO ()
+gitCheckoutForce dir commit = do
+  cd (fromText dir)
+  cmd "git" [ "checkout", "-f",  commit]
+
+gitClone :: Text -> Text -> IO ()
+gitClone from to = do
+  mkdir (dirname . fromText $ to)
+  cmd "git" [ "clone", from, to ]
 
 cmd :: Text -> [Text] -> IO ()
 cmd name args = do
