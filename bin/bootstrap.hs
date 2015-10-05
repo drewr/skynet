@@ -6,6 +6,7 @@
 import Data.List
 import Data.Text (pack, unpack)
 import System.Directory (doesDirectoryExist)
+import System.Environment (getEnv)
 import Turtle
 
 type PackageName = Text
@@ -27,8 +28,9 @@ main = do
           , "git"
           , "rsync"
           ]
-  file "http://s3.draines.com.s3.amazonaws.com/dist/git-crypt" "/usr/local/bin/git-crypt" executable
+  file "http://s3.draines.com.s3.amazonaws.com/dist/git-crypt" "/usr/local/bin/git-crypt" "0755"
   cloneRepo repo
+  unlockRepo repo
   syncEtc (repoPath repo)
   puppetApply
 
@@ -38,18 +40,26 @@ updateApt = cmd "apt-get" [ "update" ]
 package :: [PackageName] -> IO ()
 package names = cmd "apt-get" ([ "install", "-f", "-y" ] ++ names)
 
-file :: Text -> Text -> (Permissions -> Permissions) -> IO ()
+file :: Text -> Text -> Text -> IO ()
 file src dest mode = do
   mktree (dirname $ fromText dest)
   let c = format ("curl -s " % s % " >" % s) src dest
   cmdSingle c
-  perm <- chmod mode (fromText dest)
-  print $ repr perm
+  let m = format ("chmod " % s % " " % s) mode dest
+  cmdSingle m
 
 syncEtc :: Turtle.FilePath -> IO ()
 syncEtc dir = do
   cd dir
   cmd "rsync" [ "-avz", "--delete", "puppet", "/etc" ]
+
+unlockRepo :: Repository -> IO ()
+unlockRepo repo = do
+  let localKey = "/tmp/crypt.key"
+  key <- getEnv "GIT_CRYPT_KEY"
+  file (pack key) localKey "0600"
+  cmd "git" [ "crypt", "unlock", localKey ]
+  rm (fromText localKey)
 
 cloneRepo :: Repository -> IO ()
 cloneRepo repo = do
