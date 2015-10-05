@@ -39,7 +39,7 @@ package names = cmd "apt-get" ([ "install", "-f", "-y" ] ++ names)
 syncEtc :: Turtle.FilePath -> IO ()
 syncEtc dir = do
   cd dir
-  cmd "rsync" [ "-avz", "puppet", "/etc" ]
+  cmd "rsync" [ "-avz", "--delete", "puppet", "/etc" ]
 
 cloneRepo :: Repository -> IO ()
 cloneRepo repo = do
