@@ -64,7 +64,7 @@ gitClone from to = do
 gitUpdateSubmodules :: Turtle.FilePath -> IO ()
 gitUpdateSubmodules dir = do
   cd dir
-  cmd "git" [ "submodules", "update", "--init" ]
+  cmd "git" [ "submodule", "update", "--init" ]
 
 cmd :: Text -> [Text] -> IO ()
 cmd name args = do
