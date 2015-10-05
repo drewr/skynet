@@ -44,6 +44,7 @@ cloneRepo repo = do
 gitCheckoutForce :: Text -> Text -> IO ()
 gitCheckoutForce dir commit = do
   cd (fromText dir)
+  cmd "git" [ "fetch" ]
   cmd "git" [ "checkout", "-f",  commit]
 
 gitClone :: Text -> Text -> IO ()
