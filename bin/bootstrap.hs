@@ -59,7 +59,7 @@ unlockRepo repo = do
   key <- getEnv "GIT_CRYPT_KEY"
   file (pack key) localKey "0600"
   cmd "git" [ "crypt", "unlock", localKey ]
-  rm (fromText localKey)
+  -- rm (fromText localKey)
 
 cloneRepo :: Repository -> IO ()
 cloneRepo repo = do
