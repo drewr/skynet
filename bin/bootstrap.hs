@@ -9,14 +9,14 @@ import System.Directory (doesDirectoryExist)
 import Turtle
 
 type PackageName = Text
-data Repository = Repository { repoPath :: Text
+data Repository = Repository { repoPath :: Turtle.FilePath
                              , repoUrl :: Text
                              , repoCommit :: Text
                              }
 
 main :: IO ()
 main = do
-  let repo = Repository { repoPath = "/root/src/skynet"
+  let repo = Repository { repoPath = fromText "/root/src/skynet"
                         , repoUrl = "https://github.com/drewr/skynet"
                         , repoCommit = "origin/master"
                         }
@@ -25,8 +25,10 @@ main = do
           , "puppet"
           , "curl"
           , "git"
+          , "rsync"
           ]
   cloneRepo repo
+  syncEtc (repoPath repo)
 
 updateApt :: IO ()
 updateApt = cmd "apt-get" [ "update" ]
@@ -34,23 +36,29 @@ updateApt = cmd "apt-get" [ "update" ]
 package :: [PackageName] -> IO ()
 package names = cmd "apt-get" ([ "install", "-f", "-y" ] ++ names)
 
+syncEtc :: Turtle.FilePath -> IO ()
+syncEtc dir = do
+  cd dir
+  cmd "rsync" [ "-avz", "puppet", "/etc" ]
+
 cloneRepo :: Repository -> IO ()
 cloneRepo repo = do
-  exist <- doesDirectoryExist (unpack $ repoPath repo)
+  exist <- testdir (repoPath repo)
   if exist
     then gitCheckoutForce (repoPath repo) (repoCommit repo)
     else gitClone (repoUrl repo) (repoPath repo)
 
-gitCheckoutForce :: Text -> Text -> IO ()
+gitCheckoutForce :: Turtle.FilePath -> Text -> IO ()
 gitCheckoutForce dir commit = do
-  cd (fromText dir)
+  cd dir
   cmd "git" [ "fetch" ]
   cmd "git" [ "checkout", "-f",  commit]
 
-gitClone :: Text -> Text -> IO ()
+gitClone :: Text -> Turtle.FilePath -> IO ()
 gitClone from to = do
-  mkdir (dirname . fromText $ to)
-  cmd "git" [ "clone", from, to ]
+  let Right dest = (toText to)
+  mktree (dirname to)
+  cmd "git" [ "clone", from, dest ]
 
 cmd :: Text -> [Text] -> IO ()
 cmd name args = do
