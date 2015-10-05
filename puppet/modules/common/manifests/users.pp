@@ -1,4 +1,4 @@
-class users {
+class common::users {
   user { "aar":
     password => "********",
     comment => "Drew Raines",

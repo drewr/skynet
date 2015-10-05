@@ -1,4 +1,4 @@
-class packages {
+class common::packages {
   package { [
     'zsh',
   ]:
