@@ -47,6 +47,7 @@ cloneRepo repo = do
   if exist
     then gitCheckoutForce (repoPath repo) (repoCommit repo)
     else gitClone (repoUrl repo) (repoPath repo)
+  gitUpdateSubmodules (repoPath repo)
 
 gitCheckoutForce :: Turtle.FilePath -> Text -> IO ()
 gitCheckoutForce dir commit = do
@@ -59,6 +60,11 @@ gitClone from to = do
   let Right dest = (toText to)
   mktree (dirname to)
   cmd "git" [ "clone", from, dest ]
+
+gitUpdateSubmodules :: Turtle.FilePath -> IO ()
+gitUpdateSubmodules dir = do
+  cd dir
+  cmd "git" [ "submodules", "update", "--init" ]
 
 cmd :: Text -> [Text] -> IO ()
 cmd name args = do
