@@ -1,6 +1,6 @@
 class common::users {
-  user = "aar"
-  home = "/home/aar"
+  $user = "aar"
+  $home = "/home/aar"
 
   user { $user:
     ensure => "present",
