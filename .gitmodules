@@ -9,4 +9,4 @@
 	url = https://github.com/jfryman/puppet-znc
 [submodule "craft"]
 	path = craft
-	url = https://github.com/joehillen/craft.git
+	url = https://github.com/drewr/craft
