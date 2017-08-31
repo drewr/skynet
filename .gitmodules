@@ -7,3 +7,6 @@
 [submodule "puppet/modules/znc"]
 	path = puppet/modules/znc
 	url = https://github.com/jfryman/puppet-znc
+[submodule "craft"]
+	path = craft
+	url = https://github.com/joehillen/craft.git
