@@ -10,35 +10,43 @@ import System.Environment (getEnv)
 import Turtle
 
 type PackageName = Text
+
 data Repository = Repository { repoPath :: Turtle.FilePath
                              , repoUrl :: Text
                              , repoCommit :: Text
                              }
 
+data OS = Fedora
+        | Ubuntu
+        | Debian
+        | RedHat
+        | CentOS
+        | Windows
+        | Darwin
+        deriving (Show)
+
 main :: IO ()
 main = do
-  let repo = Repository { repoPath = fromText "/root/src/skynet"
+  let os = Fedora
+      repo = Repository { repoPath = fromText "/root/src/skynet"
                         , repoUrl = "https://github.com/drewr/skynet"
                         , repoCommit = "origin/master"
                         }
-  updateApt
-  package [ "facter"
-          , "puppet"
-          , "curl"
-          , "git"
-          , "rsync"
-          ]
-  file "http://s3.draines.com.s3.amazonaws.com/dist/git-crypt" "/usr/local/bin/git-crypt" "0755"
+  update os
+  package os [ "facter"
+             , "curl"
+             , "git"
+             , "rsync"
+             , "zsh"
+             ]
   cloneRepo repo
   unlockRepo repo
   syncEtc (repoPath repo)
   puppetApply
 
-updateApt :: IO ()
-updateApt = cmd "apt-get" [ "update" ]
-
-package :: [PackageName] -> IO ()
-package names = cmd "apt-get" ([ "install", "-f", "-y" ] ++ names)
+update :: OS -> IO ()
+update Ubuntu = cmd "apt-get" [ "update" ]
+update Fedora = cmd "dnf"     [ "update" ]
 
 file :: Text -> Text -> Text -> IO ()
 file src dest mode = do
@@ -47,6 +55,10 @@ file src dest mode = do
   cmdSingle c
   let m = format ("chmod " % s % " " % s) mode dest
   cmdSingle m
+
+package :: OS -> [PackageName] -> IO ()
+package Ubuntu p = cmd "apt-get" ([ "install", "-f", "-y" ] ++ p)
+package Fedora p = cmd "dnf" ([ "install", "-y" ] ++ p)
 
 syncEtc :: Turtle.FilePath -> IO ()
 syncEtc dir = do
