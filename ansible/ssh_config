@@ -1,0 +1,4 @@
+Host *
+ ControlMaster auto
+ ControlPersist 10s
+ ServerAliveInterval 60

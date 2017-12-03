@@ -1,0 +1,59 @@
+heartbeat.monitors:
+- type: tcp
+  name: facebook
+  #enabled: true
+  schedule: '@every 14s' # every 5 seconds from start of beat
+  hosts: ["ssl://www.facebook.com:443"]
+  ipv4: true
+  ipv6: true
+  mode: any
+- type: tcp
+  name: comcast
+  #enabled: true
+  schedule: '@every 14s' # every 5 seconds from start of beat
+  hosts: ["cdns01.comcast.net:53"]
+  ipv4: true
+  ipv6: true
+  mode: any
+- type: tcp
+  name: level3
+  #enabled: true
+  schedule: '@every 14s' # every 5 seconds from start of beat
+  hosts: ["a.resolvers.level3.net:53"]
+  ipv4: true
+  ipv6: true
+  mode: any
+- type: tcp
+  name: google
+  #enabled: true
+  schedule: '@every 14s' # every 5 seconds from start of beat
+  hosts: ["ssl://www.google.com:443"]
+  ipv4: true
+  ipv6: true
+  mode: any
+#heartbeat.scheduler:
+#  limit: 3
+
+cloud.auth: "{{ es_user }}:{{ es_pass }}"
+cloud.id: "{{ es_id }}"
+
+#setup.template.name:
+#setup.template.pattern:
+setup.template.settings:
+  index.number_of_shards: 1
+  index.number_of_replicas: 1
+  _source.enabled: true
+
+#output.elasticsearch:
+#  index: "heartbeat-%{+yyyy.MM}"
+
+logging.level: warning
+logging.to_files: true
+logging.to_syslog: false
+logging.files:
+  path: /var/log/heartbeat
+  name: heartbeat.log
+  keepfiles: 3
+  permissions: 0644
+
+path.home: /var/lib/heartbeat

@@ -1,0 +1,100 @@
+- name: apply common configuration to all nodes
+  hosts: pi
+  remote_user: root
+
+  vars:
+    arch: "{{ ansible_architecture }}"
+    es_id: "HeartbeatGCPDrew:dXMtY2VudHJhbDEuZ2NwLmNsb3VkLmVzLmlvJDZlZWM1YzQ1ZDFjOTY4YTZhNWI2OTE5N2EwMGZiMzBiJDZhYzM1ZTQyYTA4MzlhNDIyZjdmNTQ3MGQ5Y2IwNjg5"
+    es_user: !vault |
+          $ANSIBLE_VAULT;1.1;AES256
+          66376163396331623239613132393033393835616133343935623463303962336637643966656161
+          6337343536363930336136333762373736396165346635640a336537383835343862316164656238
+          65633061366535653635336138633565633636373534393830386439346664333035623862343933
+          6130356135306634640a333630366130323938643933373762323331613938303465333562343062
+          3236
+    es_pass: !vault |
+          $ANSIBLE_VAULT;1.1;AES256
+          66656132643533613064383636373862343337366430363561663264616635613662316364323832
+          6134346134643061623931366139396234356563353630620a313065633632653537383537666231
+          63363762386465376564333338373335386533653332316136343463656263396535303233373565
+          3032376135373765310a666432303464353530633335336234643935363734306164663062386463
+          65316231336436313737613137376236653430633533373662373166383766663464
+    heartbeat_bin: "/go/src/github.com/elastic/beats/heartbeat/heartbeat"
+    heartbeat_user: "heartbeat"
+    heartbeat_group: "heartbeat"
+
+  roles:
+    - common
+    - golang
+
+  tasks:
+
+  - group:
+      name: "{{ heartbeat_group }}"
+      state: present
+
+  - user:
+      name: "{{ heartbeat_user }}"
+      shell: /bin/bash
+      groups: "{{ heartbeat_group }}"
+      
+  - name: get go
+    unarchive:
+      src: https://redirector.gvt1.com/edgedl/go/go1.9.2.linux-armv6l.tar.gz
+      dest: /
+      remote_src: yes
+      creates: /go/bin/go
+
+  - name: make beats dir
+    file: path=/go/src/github.com/elastic/ state=directory
+
+  - name: make heartbeat log dir
+    file: path=/var/log/heartbeat state=directory
+
+  - name: make heartbeat config dir
+    file: path=/etc/heartbeat state=directory
+
+  - name: make heartbeat data dir
+    file:
+      path: /var/lib/heartbeat
+      state: directory
+      owner: "{{ heartbeat_user }}"
+      group: "{{ heartbeat_group }}"
+      mode: "0755"      
+
+  - name: clone beats
+    git:
+      repo: https://github.com/elastic/beats
+      dest: /go/src/github.com/elastic/beats
+      force: no
+      version: origin/6.0
+
+  - name: build beats
+    shell: PATH=/go/bin:$PATH make
+    args:
+      chdir: /go/src/github.com/elastic/beats/heartbeat
+      creates: "{{ heartbeat_bin }}"
+
+  - name: install heartbeat config
+    template: src=tmpl/heartbeat.yml.j2 dest=/etc/heartbeat/heartbeat.yml
+    args:
+      owner: root
+      group: root
+      mode: '0644'
+
+  - name: install heartbeat fields
+    template: src=tmpl/fields.yml.j2 dest=/var/lib/heartbeat/fields.yml
+    args:
+      owner: root
+      group: root
+      mode: '0644'
+
+  - name: install heartbeat service
+    template: src=tmpl/heartbeat.service.j2 dest=/etc/systemd/system/heartbeat.service
+    args:
+      owner: root
+      group: root
+      mode: '0644'
+
+  - name: start heartbeat
+    systemd: state=started name=heartbeat daemon_reload=yes
