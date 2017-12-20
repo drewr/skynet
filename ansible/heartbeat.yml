@@ -29,6 +29,13 @@
 
   tasks:
 
+  - name: install rc.local
+    template: src=tmpl/rc.local.j2 dest=/etc/rc.local
+    args:
+      owner: root
+      group: root
+      mode: '0755'
+
   - group:
       name: "{{ heartbeat_group }}"
       state: present
@@ -37,7 +44,7 @@
       name: "{{ heartbeat_user }}"
       shell: /bin/bash
       groups: "{{ heartbeat_group }}"
-      
+
   - name: get go
     unarchive:
       src: https://redirector.gvt1.com/edgedl/go/go1.9.2.linux-armv6l.tar.gz
@@ -60,7 +67,7 @@
       state: directory
       owner: "{{ heartbeat_user }}"
       group: "{{ heartbeat_group }}"
-      mode: "0755"      
+      mode: "0755"
 
   - name: clone beats
     git:
