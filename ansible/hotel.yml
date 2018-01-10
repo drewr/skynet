@@ -1,0 +1,51 @@
+- name: apply common configuration to all nodes
+  hosts: desktop
+  remote_user: root
+
+  vars:
+    arch: "{{ ansible_architecture }}"
+    es_id: "HeartbeatGCPDrew:dXMtY2VudHJhbDEuZ2NwLmNsb3VkLmVzLmlvJDZlZWM1YzQ1ZDFjOTY4YTZhNWI2OTE5N2EwMGZiMzBiJDZhYzM1ZTQyYTA4MzlhNDIyZjdmNTQ3MGQ5Y2IwNjg5"
+    es_user: !vault |
+          $ANSIBLE_VAULT;1.1;AES256
+          66376163396331623239613132393033393835616133343935623463303962336637643966656161
+          6337343536363930336136333762373736396165346635640a336537383835343862316164656238
+          65633061366535653635336138633565633636373534393830386439346664333035623862343933
+          6130356135306634640a333630366130323938643933373762323331613938303465333562343062
+          3236
+    es_pass: !vault |
+          $ANSIBLE_VAULT;1.1;AES256
+          33643837363537636433643464336438653134373063626430623736646635353662366233343766
+          6330613235376238333236333765353935363831616332320a366531323965326564346236326333
+          36366130316539376533356434303463646662393663383033323531326565393938393766313765
+          6637653162303630360a376335656532386635643731613366646530393166653161653332346263
+          33633130303464353436643066373963313265303634346433643730366339613132
+    heartbeat_rpm: "/home/aar/Downloads/heartbeat-6.0.1-x86_64.rpm"
+
+  tasks:
+  - name: install main packages
+    dnf:
+      name: '{{ package }}'
+      state: latest
+    with_items:
+      - yum
+      - curl
+      - git
+    loop_control:
+      loop_var: package
+    become: true
+    become_user: root
+
+  - name: install heartbeat
+    yum:
+      name: https://artifacts.elastic.co/downloads/beats/heartbeat/heartbeat-6.0.1-x86_64.rpm
+      state: present
+
+  - name: install heartbeat config
+    template: src=tmpl/heartbeat.yml.j2 dest=/etc/heartbeat/heartbeat.yml
+    args:
+      owner: root
+      group: root
+      mode: '0644'
+
+  - name: start heartbeat
+    systemd: state=started name=heartbeat-elastic daemon_reload=yes

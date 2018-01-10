@@ -2,3 +2,6 @@ localhost ansible_connection=local
 
 [pi]
 rainesberry.local ansible_user=root
+
+[desktop]
+hotel.local ansible_user=root
