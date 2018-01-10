@@ -1,2 +1,2 @@
 rainesberry:
-	nix-shell --command "ansible-playbook --ask-vault-pass heartbeat.yml"
+	nix-shell --command "ansible-playbook --ask-vault-pass rainesberry.yml"
