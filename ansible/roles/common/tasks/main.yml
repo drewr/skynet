@@ -1,13 +1,10 @@
 - name: install main packages
   apt:
-    name: '{{ package }}'
     state: latest
-  with_items:
-    - build-essential
-    - curl
-    - git
-    - lsb-release
-  loop_control:
-    loop_var: package
+    name:
+      - build-essential
+      - curl
+      - git
+      - lsb-release
   become: true
   become_user: root
