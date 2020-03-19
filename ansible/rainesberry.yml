@@ -47,7 +47,7 @@
 
   - name: get go
     unarchive:
-      src: https://redirector.gvt1.com/edgedl/go/go1.9.2.linux-armv6l.tar.gz
+      src: https://dl.google.com/go/go1.13.8.linux-armv6l.tar.gz
       dest: /
       remote_src: yes
       creates: /go/bin/go
@@ -74,7 +74,7 @@
       repo: https://github.com/elastic/beats
       dest: /go/src/github.com/elastic/beats
       force: no
-      version: origin/6.0
+      version: origin/7.6
 
   - name: build beats
     shell: PATH=/go/bin:$PATH make
