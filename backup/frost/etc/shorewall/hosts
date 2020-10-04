@@ -1,0 +1,12 @@
+#
+# Shorewall -- /etc/shorewall/hosts
+#
+# For information about entries in this file, type "man shorewall-hosts"
+#
+# The manpage is also online at
+# http://www.shorewall.net/manpages/shorewall-hosts.html
+#
+###############################################################################
+#ZONE		HOSTS				OPTIONS
+family          lan0:10.1.1.50
+guest           lan0:10.1.1.2

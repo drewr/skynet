@@ -1,0 +1,16 @@
+#
+# Shorewall -- /etc/shorewall/interfaces
+#
+# For information about entries in this file, type "man shorewall-interfaces"
+#
+# The manpage is also online at
+# http://www.shorewall.net/manpages/shorewall-interfaces.html
+#
+?FORMAT 2
+###############################################################################
+#ZONE		INTERFACE		OPTIONS
+net    wan0   dhcp
+loc    lan0   
+guest  wlan0
+docker docker0
+zt     ztly5qfxae

@@ -1,0 +1,27 @@
+#
+# Shorewall -- /etc/shorewall/rules
+#
+# For information on the settings in this file, type "man shorewall-rules"
+#
+# The manpage is also online at
+# http://www.shorewall.net/manpages/shorewall-rules.html
+#
+##############################################################################################################################################################
+#ACTION		SOURCE		DEST		PROTO	DPORT	SPORT	ORIGDEST	RATE	USER	MARK	CONNLIMIT	TIME	HEADERS	SWITCH	HELPER
+
+?SECTION ALL
+?SECTION ESTABLISHED
+?SECTION RELATED
+?SECTION INVALID
+?SECTION UNTRACKED
+?SECTION NEW
+
+# ssh to router from outside
+DNAT            net             loc:10.0.1.1:22    tcp     443
+
+DNS(ACCEPT)     loc             $FW
+DNS(ACCEPT)     $FW             net
+SSH(ACCEPT)     loc             $FW  
+ACCEPT          $FW             loc              tcp     22
+ACCEPT          $FW             loc              tcp     22
+Web(ACCEPT)     loc             $FW       
