@@ -1,0 +1,9 @@
+[Match]
+Name=wlan0
+
+[Network]
+Address=10.4.1.1/24
+Address=fd00::4/64
+#Gateway=10.1.1.1
+##DNS=10.1.1.1
+##MulticastDNS=yes

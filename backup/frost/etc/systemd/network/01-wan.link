@@ -1,0 +1,7 @@
+[Match]
+MACAddress=40:62:31:09:02:a0
+
+[Link]
+Description=WAN
+Name=wan0
+

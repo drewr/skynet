@@ -1,0 +1,7 @@
+[Match]
+MACAddress=00:db:df:30:cb:f9
+
+[Link]
+Description=Wireless AP
+Name=wlan0
+

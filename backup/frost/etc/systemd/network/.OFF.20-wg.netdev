@@ -1,0 +1,14 @@
+[NetDev]
+Name = wg0
+Kind = wireguard
+Description = Wireguard
+
+[WireGuard]
+PrivateKey = 2JJ0ALntpL5YS/un9AVaQ5ydIzCDmMA1YKHsDaRGuX0=
+ListenPort = 443
+
+[WireGuardPeer]
+PublicKey = lpIFYpRpM3tHYz3MN/cTv3jCei/vFoZmJoQTQzqolFU=
+PresharedKey = CvN3IA2DlVYCnvs2gE8eApPze6lgZf34kraQ+jtTG6U=
+AllowedIPs = 10.3.1.0/24, 0.0.0.0/0
+PersistentKeepalive = 25
