@@ -1,5 +1,4 @@
 $TTL 300
-; generated with dnscontrol 2020-11-12T11:11:48-06:00
-@                IN SOA   DEFAULT_NOT_SET. DEFAULT_NOT_SET. 2020111201 3600 600 604800 1440
-                 IN A     1.2.3.5
-                 IN A     1.2.3.99
+; generated with dnscontrol 2020-11-12T14:02:29-06:00
+@                IN SOA   DEFAULT_NOT_SET. DEFAULT_NOT_SET. 2020111202 3600 600 604800 1440
+test             IN A     1.2.3.4
