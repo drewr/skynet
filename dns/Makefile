@@ -1,5 +1,6 @@
 creds.json:
 	cp ../.secrets/d1c8ea80 creds.json
+	jq keys <creds.json
 
 .PHONY: preview push
 
