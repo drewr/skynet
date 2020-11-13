@@ -7,6 +7,7 @@ D("example.com", REG_NONE, DnsProvider(DNS_BIND),
 );
 
 D("draines.com", REG_NONE, DnsProvider(DNS_GCLOUD),
+  A("@","0.0.0.0", TTL(30)),
   A("test","1.2.3.5"),
   AAAA("test","dead:beef::0")
 );
